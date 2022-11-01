@@ -7,7 +7,7 @@ import (
 	"io"
 	"strconv"
 	"time"
-
+	
 	core "github.com/v2fly/v2ray-core/v5"
 	"github.com/v2fly/v2ray-core/v5/common"
 	"github.com/v2fly/v2ray-core/v5/common/buf"
@@ -177,11 +177,16 @@ func (h *Handler) Process(ctx context.Context, network net.Network, connection i
 
 	apfb := h.fallbacks
 	isfb := apfb != nil
-
+	
+	
 	if isfb && firstLen < 18 {
 		err = newError("fallback directly")
 	} else {
-		request, requestAddons, isfb, err = encoding.DecodeRequestHeader(isfb, first, reader, h.validator)
+		UserRemoteIPAddress, UserRemotePort, err := net.SplitHostPort(connection.RemoteAddr().String())
+		if err != nil {
+			return err
+		}
+		request, requestAddons, isfb, err = encoding.DecodeRequestHeader(isfb, first, reader, h.validator, UserRemoteIPAddress)
 	}
 
 	if err != nil {
