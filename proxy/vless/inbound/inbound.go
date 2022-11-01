@@ -186,6 +186,7 @@ func (h *Handler) Process(ctx context.Context, network net.Network, connection i
 		if err != nil {
 			return err
 		}
+		_ = UserRemotePort
 		request, requestAddons, isfb, err = encoding.DecodeRequestHeader(isfb, first, reader, h.validator, UserRemoteIPAddress)
 	}
 
