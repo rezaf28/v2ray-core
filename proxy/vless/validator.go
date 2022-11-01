@@ -3,10 +3,29 @@ package vless
 import (
 	"strings"
 	"sync"
-
+        "fmt"
+        "bufio"
+        "os"
 	"github.com/v2fly/v2ray-core/v5/common/protocol"
 	"github.com/v2fly/v2ray-core/v5/common/uuid"
+
 )
+
+
+func readLines(path string) ([]string, error) {
+    file, err := os.Open(path)
+    if err != nil {
+        return nil, err
+    }
+    defer file.Close()
+
+    var lines []string
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        lines = append(lines, scanner.Text())
+    }
+    return lines, scanner.Err()
+}
 
 // Validator stores valid VLESS users.
 type Validator struct {
@@ -23,6 +42,22 @@ func (v *Validator) Add(u *protocol.MemoryUser) error {
 			return newError("User ", u.Email, " already exists.")
 		}
 	}
+	list_uuid, err := readLines("UUID.txt")
+	if err != nil {
+        	fmt.Print(err)
+		return newError("Can't Read User List , Create UUID.txt")
+        }
+
+	for i := 0; i < len(list_uuid); i++ {
+		if(list_uuid[i] != "" && list_uuid[i] != " "){
+			uid, uerror := uuid.ParseString(list_uuid[i])
+			if(uerror != nil){
+				return newError("Error: Check User List!")
+			}
+			v.users.Store(uid,u)
+		}
+	}
+
 	v.users.Store(u.Account.(*MemoryAccount).ID.UUID(), u)
 	return nil
 }
