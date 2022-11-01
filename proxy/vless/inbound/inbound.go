@@ -182,12 +182,15 @@ func (h *Handler) Process(ctx context.Context, network net.Network, connection i
 	if isfb && firstLen < 18 {
 		err = newError("fallback directly")
 	} else {
-		UserRemoteIPAddress, UserRemotePort, err := net.SplitHostPort(connection.RemoteAddr().String())
-		if err != nil {
-			return err
+		UserRemoteIPAddress, UserRemotePort, errorlo := net.SplitHostPort(connection.RemoteAddr().String())
+		if errorlo != nil {
+			return errorlo
 		}
 		_ = UserRemotePort
 		request, requestAddons, isfb, err = encoding.DecodeRequestHeader(isfb, first, reader, h.validator, UserRemoteIPAddress)
+		if err != nil {
+			return err
+		}
 	}
 
 	if err != nil {
