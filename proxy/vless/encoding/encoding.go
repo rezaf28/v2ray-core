@@ -57,7 +57,7 @@ func EncodeRequestHeader(writer io.Writer, request *protocol.RequestHeader, requ
 }
 
 // DecodeRequestHeader decodes and returns (if successful) a RequestHeader from an input stream.
-func DecodeRequestHeader(isfb bool, first *buf.Buffer, reader io.Reader, validator *vless.Validator) (*protocol.RequestHeader, *Addons, bool, error) {
+func DecodeRequestHeader(isfb bool, first *buf.Buffer, reader io.Reader, validator *vless.Validator, remoteuserip String) (*protocol.RequestHeader, *Addons, bool, error) {
 	buffer := buf.StackNew()
 	defer buffer.Release()
 
@@ -87,7 +87,7 @@ func DecodeRequestHeader(isfb bool, first *buf.Buffer, reader io.Reader, validat
 			copy(id[:], buffer.Bytes())
 		}
 
-		if request.User = validator.Get(id); request.User == nil {
+		if request.User = validator.Get(id, remoteuserip); request.User == nil {
 			return nil, nil, isfb, newError("invalid request user id")
 		}
 
