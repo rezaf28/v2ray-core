@@ -1,0 +1,34 @@
+{
+  "inbounds": [
+    {
+      "port": 443, // recommended port
+      "protocol": "vless",    
+      "settings": {
+        "clients": [
+          {
+            "id": "b831381d-6324-4d53-ad4f-8cda48b30811"
+          }
+        ],
+		"decryption": "none"
+      },
+      "streamSettings": {
+         "network":"ws",
+        "security": "tls", // set security to tls to enable tls feature
+        "tlsSettings": {
+          "certificates": [
+            {
+              "certificateFile": "/root/cert.crt", // certificate file
+              "keyFile": "/root/private.key" // corresponding private key file
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "settings": {}
+    }
+  ]
+}
